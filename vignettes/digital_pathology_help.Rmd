@@ -1,0 +1,104 @@
+---
+title: "digital_pathology_help"
+author: "Min Cen"
+date: "2021/12/20"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{digital_pathology_help}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(StatComp21097)
+```
+
+## matchFeaLab
+
+在利用数字病理图像来预测病人的基因突变/表达等情境中，每个病人的组织病理图像很大所以需要切割成一般的小图片来作为输入。一种癌症往往有几百个病人，每个病人的图片能切割成几千甚至几万个小图片。一般的MIL方法常常会先利用所有小图片来预测基因突变/表达，小图片的标签被附上病人的标签。由于数据量大，所以每个病人所有的小图片特征会作为一个特征文件存储，文件名称为病人的id。这导致匹配特征和标签不是很方便。又因为匹配特征和标签这件事经常会做到，所以写了一个R函数可以方便以后使用。（这也可以推广到其他的MIL情景中去）
+
+这个函数能够读取特征文件夹下的所有特征csv文件，匹配对应的label后，将每个特征标签矩阵保存到新的文件夹下存为csv文件。并返回匹配成功的病人id的list。
+
+feature_path为存放每个病人特征csv文件的文件夹，csv文件的命名为病人id；
+
+Label需要是一个dataframe包含“id”，“label”，“CancerType”。id用于匹配病人id，CancerType是由于获取的label时常常包含各种各样的癌症种类，聚焦到一个癌症种类下，可以大大地减少数据集的数量级提高效率。如果不清楚Label的癌症种类的情况下，可以添加CancerType列为“unknown”，对应地，将函数种cancer_types参数记为c("unkonwn")。
+
+cancer_types为一个向量填写所有相关的癌症，有利于做pancancer，例如c("LUAD","UCEC"),c("STAD","COAD","UCEC"),长度没有上限。如果不想选择cancer类别，取cancer_types为unique(Label$CancerType)。
+
+save_path为需要存匹配后csv文件的文件夹。存储的csv文件名称和原来特征的csv名称相同。
+
+id_len为id的长度，默认为12，是符合了最常用的TCGA数据的id。其他数据可以根据id来修改。
+
+ifclass和threshold为了判断要做二分类还是连续值预测，如果Label数据种"label"字段下为连续值，那么ifclass=TRUE，threshold=0.5表示以0.5为分类，大于0.5的取1，小于0.5的取0作为label。ifclass=FALSE就会忽略threshold的值，直接把label下原始的值匹配起来。
+
+```{r}
+# matchFeaLab(
+#   feature_path,
+#   Label,
+#   cancer_types,
+#   save_path,
+#   id_len = 12,
+#   ifclass = TRUE,
+#   threshold = 0.4
+# )
+```
+
+例子：
+
+```{r}
+feature_path ="/data/cenmin/TCGA_CRC_Tumorfeaposinocsv"
+label_path = "/data/cenmin/statR/MSI.csv"
+Label = read.csv(label_path,sep="\t")
+save_path = "/data/cenmin/statR/TCGA"
+cancer_types = c("COAD","READ")
+colnames(Label) <- c('id','label','CancerType')
+```
+```{r}
+#save_id = matchFeaLab(feature_path,Label,cancer_types,save_path)
+```
+
+没跑是因为这个例子的参数为地址，不是一般的数据。
+
+## fitcontimodels
+
+在病理图像任务中，为了比较不同特征提取器能力或者数据集类别筛选的好坏，需要利用比较多种特征对各种基因表达（十几种甚至几十种）进行预测。这是会多次重复的实验，所以设计了一个小型函数fitcontimodels来一行代码完成分割数据集和拟合多种模型，输出MSEs和模型结果，绘制预测结果和真实值的散点图。这对进行横向比较有很大的帮助。
+
+这个函数中已经包含的模型包括svr，lm，和lasso。data的要求就是一个dataframe，前几都为特征，最后一列是标签。frac为分割数据集的比例，0.8就是train：test=4：1。seed控制分割。models可以写c("lm", "lasso", "svr")的任意子集，除了空集。kernel是svr中的参数，可以像svm help文件里面的一样改动。
+
+```{r}
+# fitcontimodels(
+#   data,
+#   frac = 0.8,
+#   seed = 12345,
+#   models = c("lm", "lasso", "svr"),
+#   kernel = "linear"
+# )
+```
+
+```{r}
+#create dataset
+set.seed(12)
+x1 <- 1:100
+x2 <- seq(2,18,length.out = 100)+rnorm(100,3,4)
+y <- 4*x1 - 3*x2+ rnorm(100,0,2)
+data <- data.frame(x1=x1,x2=x2,y=y)
+```
+
+例子：
+
+```{r}
+results <- fitcontimodels(data,frac=0.6,seed=2234,c("lm","lasso"),kernel="sigmoid")
+```
+```{r}
+# MSEs of models trained
+results[[1]]
+# models[1]
+results[[2]][1]
+````

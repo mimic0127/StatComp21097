@@ -1,0 +1,9 @@
+useDynLib(StatComp21097, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+importFrom(utils, read.csv, write.csv)
+importFrom(graphics, abline)
+importFrom(stats, lm, predict)
+importFrom(e1071,svm)
+importFrom(glmnet,glmnet,cv.glmnet)
+
+exportPattern("^[[:alpha:]]+")

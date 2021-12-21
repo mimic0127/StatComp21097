@@ -1,0 +1,16 @@
+Package: StatComp21097
+Type: Package
+Title: Functions in R and Cpp for digital pathology and'Statistical Computing' course
+Version: 1.0
+Date: 2021-12-18
+Author: Min Cen
+Maintainer: Min Cen <cenmin0127@mail.ustc.edu.cn>
+Description: Several R and Rcpp functions for digital pathology and statistical computing are included in the package.
+License: GPL (>= 2)
+Imports: Rcpp, microbenchmark, knitr, rmarkdown, e1071, caret, glmnet, scatterplot3d, Ball, MASS, RANN, boot, bootstrap
+LinkingTo: Rcpp
+RoxygenNote: 7.1.2
+Encoding: UTF-8
+VignetteBuilder: knitr
+URL: https://github.com/mimic0127/StatComp21097
+BugReports: https://github.com/mimic0127/StatComp21097/issues
