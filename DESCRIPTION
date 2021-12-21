@@ -7,7 +7,7 @@ Author: Min Cen
 Maintainer: Min Cen <cenmin0127@mail.ustc.edu.cn>
 Description: Several R and Rcpp functions for digital pathology and statistical computing are included in the package.
 License: GPL (>= 2)
-Imports: Rcpp, microbenchmark, knitr, rmarkdown, e1071, caret, glmnet, scatterplot3d, Ball, MASS, RANN, boot, bootstrap
+Imports: Rcpp, microbenchmark, knitr, rmarkdown, e1071, caret, glmnet, scatterplot3d, Ball, MASS, RANN, boot, bootstrap, Matrix
 LinkingTo: Rcpp
 RoxygenNote: 7.1.2
 Encoding: UTF-8

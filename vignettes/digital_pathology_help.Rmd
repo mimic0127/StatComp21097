@@ -29,6 +29,20 @@ library(StatComp21097)
 feature_path为存放每个病人特征csv文件的文件夹，csv文件的命名为病人id；
 
 Label需要是一个dataframe包含“id”，“label”，“CancerType”。id用于匹配病人id，CancerType是由于获取的label时常常包含各种各样的癌症种类，聚焦到一个癌症种类下，可以大大地减少数据集的数量级提高效率。如果不清楚Label的癌症种类的情况下，可以添加CancerType列为“unknown”，对应地，将函数种cancer_types参数记为c("unkonwn")。
+```{r}
+# Label example
+# id      label       CancerType
+# TCGA-OR-A5J1-01A	0.2750	ACC		
+# TCGA-OR-A5J2-01A	0.3236	ACC		
+# TCGA-OR-A5J3-01A	0.3434	ACC		
+# TCGA-OR-A5J4-01A	0.2997	ACC		
+# TCGA-OR-A5J5-01A	0.5224	ACC		
+# TCGA-OR-A5J6-01A	0.2894	ACC		
+# TCGA-OR-A5J7-01A	0.2940	ACC		
+# TCGA-OR-A5J8-01A	0.3203	ACC		
+# TCGA-OR-A5J9-01A	0.3173	ACC		
+# TCGA-OR-A5JA-01A	0.3070	ACC
+```
 
 cancer_types为一个向量填写所有相关的癌症，有利于做pancancer，例如c("LUAD","UCEC"),c("STAD","COAD","UCEC"),长度没有上限。如果不想选择cancer类别，取cancer_types为unique(Label$CancerType)。
 
@@ -55,10 +69,10 @@ ifclass和threshold为了判断要做二分类还是连续值预测，如果Labe
 ```{r}
 feature_path ="/data/cenmin/TCGA_CRC_Tumorfeaposinocsv"
 label_path = "/data/cenmin/statR/MSI.csv"
-Label = read.csv(label_path,sep="\t")
+#Label = read.csv(label_path,sep="\t")
 save_path = "/data/cenmin/statR/TCGA"
 cancer_types = c("COAD","READ")
-colnames(Label) <- c('id','label','CancerType')
+#colnames(Label) <- c('id','label','CancerType')
 ```
 ```{r}
 #save_id = matchFeaLab(feature_path,Label,cancer_types,save_path)
